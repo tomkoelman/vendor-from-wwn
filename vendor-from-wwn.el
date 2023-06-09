@@ -41,7 +41,6 @@
 
 (defun vendor-from-wwn/oui-list-from-buffer ()
   "Parses the current buffer and returns an assoc list from vendor id to vendor string."
-  (interactive)
   (let (id-to-vendor)
     (goto-char (point-min))
     (while (re-search-forward "\\(..\\)-\\(..\\)-\\(..\\) +([^)]*)\\(.*\\)" nil t)
@@ -105,7 +104,6 @@
   
 (defun vendor-from-wwn/nice-wwn (wwn)
   "Return a nicely formatted version of WWN."
-  (interactive)
   (let ((vendor-specific-extension (vendor-specific-extension-from-wwn wwn)))
     (concat "[" (network-address-authority-from-wwn wwn) "]" 
             "[" (vendor-from-wwn/colon-separated-pairs (oui-from-wwn wwn)) "]"
@@ -164,7 +162,6 @@
 
 (defun vendor-from-wwn (wwn)
   "Returns the vendor for WWN."
-  (interactive)
   (let ((oui-list (vendor-from-wwn/oui-list))
         (oui (oui-from-wwn wwn)))
     (assoc-default oui oui-list)))
