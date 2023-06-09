@@ -43,7 +43,7 @@
   "Parses the current buffer and returns an assoc list from vendor id to vendor string."
   (let (id-to-vendor)
     (goto-char (point-min))
-    (while (re-search-forward "\\(..\\)-\\(..\\)-\\(..\\) +([^)]*)\\(.*\\)" nil t)
+    (while (re-search-forward "\\(..\\)-\\(..\\)-\\(..\\) +([^)]*)\\([^\r]+\\)" nil t)
       (let ((id (downcase (concat (match-string 1)
                                   (match-string 2)
                                   (match-string 3))))
