@@ -6,7 +6,7 @@
 ;; Created: July 2013
 ;; Version: 0.1.0
 ;; Keywords: extensions
-;; Homepage: http://github.com/tkoelman/vendor-from-wwn
+;; Homepage: http://github.com/tomkoelman/vendor-from-wwn
 ;; Package-Requires: ((dash "1.5.0")
 ;;                    (cl-lib "1.0"))
 
