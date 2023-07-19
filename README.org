@@ -1,0 +1,4 @@
+This package provides functionality to extract vendor information from a WWN.
+
+Key defun is ~vendor-from-wwn/nice-wwn~, which takes a WWN and returns a
+nicely formatted string with all vendor-specific information recognizable.
