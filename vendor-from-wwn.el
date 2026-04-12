@@ -1,10 +1,10 @@
 ;;; vendor-from-wwn.el --- Extract vendor information from WWNs
 
-;; Copyright (C) 2013 Tom Koelman
+;; Copyright (C) 2013,2026 Tom Koelman
 
-;; Author: Tom Koelman <tkoelman@xs4all.nl>
+;; Author: Tom Koelman
 ;; Created: July 2013
-;; Version: 0.3.0
+;; Version: 0.4.0
 ;; Keywords: extensions
 ;; Homepage: http://github.com/tomkoelman/vendor-from-wwn
 ;; Package-Requires: ()
