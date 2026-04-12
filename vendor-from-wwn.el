@@ -7,7 +7,7 @@
 ;; Version: 0.2.0
 ;; Keywords: extensions
 ;; Homepage: http://github.com/tomkoelman/vendor-from-wwn
-;; Package-Requires: ((cl-lib "1.0"))
+;; Package-Requires: ()
 
 ;; This file is not part of GNU Emacs
 ;; Standard GPL v3 or higher license applies.
@@ -21,7 +21,6 @@
 ;;
 ;;; Code:
 
-(require 'cl-lib)
 
 (defvar vendor-from-wwn/oui-list nil)
 
@@ -83,9 +82,11 @@
 (defun vendor-from-wwn/pairs (str)
   "Returns a list of strings of length 2. E.g. \"aabbcc\" would yield
  (list \"aa\" \"bb\" \"cc\")."
-  (let ((chars (split-string str "" t)))
-    (cl-loop while chars
-             collect (concat (pop chars) (or (pop chars) "")))))
+  (let ((chars (split-string str "" t))
+        result)
+    (while chars
+      (push (concat (pop chars) (or (pop chars) "")) result))
+    (nreverse result)))
 
 (defun vendor-from-wwn/colon-separated-pairs (str)
   "Returns STR, split into pairs, separated by :'s."
