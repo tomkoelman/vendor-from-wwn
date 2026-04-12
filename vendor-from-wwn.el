@@ -4,7 +4,7 @@
 
 ;; Author: Tom Koelman <tkoelman@xs4all.nl>
 ;; Created: July 2013
-;; Version: 0.1.0
+;; Version: 0.2.0
 ;; Keywords: extensions
 ;; Homepage: http://github.com/tomkoelman/vendor-from-wwn
 ;; Package-Requires: ((cl-lib "1.0"))
