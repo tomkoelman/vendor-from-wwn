@@ -21,8 +21,9 @@
 ;;
 ;;; Code:
 
+(defconst vendor-from-wwn/version "0.5.0")
 
-(defvar vendor-from-wwn/oui-list nil)
+(defvar vendor-from-wwn/oui-table nil)
 
 (defun vendor-from-wwn/oui-filename()
   "Returns the filename that's used as datasource."
@@ -36,43 +37,64 @@
   "Returns a buffer containing oui, gotten from internet. Returns nil if that fails."
   (url-retrieve-synchronously (vendor-from-wwn/oui-url)))
 
-(defun vendor-from-wwn/oui-list-from-buffer ()
-  "Parses the current buffer and returns an assoc list from vendor id to vendor string."
-  (let (id-to-vendor)
+(defun vendor-from-wwn/oui-table-from-ieee-buffer ()
+  "Parses the current buffer and returns a hash table from vendor id to vendor string."
+  (let ((entry-re "\\(..\\)-\\(..\\)-\\(..\\) +([^)]*)\\([^\r]+\\)"))
     (goto-char (point-min))
-    (while (re-search-forward "\\(..\\)-\\(..\\)-\\(..\\) +([^)]*)\\([^\r]+\\)" nil t)
-      (let ((id (downcase (concat (match-string 1)
-                                  (match-string 2)
-                                  (match-string 3))))
-            (vendor (substring (match-string 4) 2)))
-        (push (cons id vendor) id-to-vendor)))
-    id-to-vendor))
+    (let ((table (make-hash-table :test 'equal
+                                  :size (how-many entry-re (point-min) (point-max)))))
+      (goto-char (point-min))
+      (while (re-search-forward entry-re nil t)
+        (let ((id (downcase (concat (match-string 1)
+                                    (match-string 2)
+                                    (match-string 3))))
+              (vendor (substring (match-string 4) 2)))
+          (puthash id vendor table)))
+      table)))
 
-(defun vendor-from-wwn/oui-list-from-file ()
-  "Reads the cached parsed assoc list from file. Returns nil on some fail."
+(defun vendor-from-wwn/oui-table-from-cache-file ()
+  "Reads the cached tab-separated file into a hash table. Returns nil on some fail."
   (when (file-exists-p (vendor-from-wwn/oui-filename))
-    (with-temp-buffer
-      (insert-file-contents (vendor-from-wwn/oui-filename))
-      (read (current-buffer)))))
+    (let ((coding-system-for-read 'raw-text))
+      (with-temp-buffer
+        (insert-file-contents (vendor-from-wwn/oui-filename))
+        (goto-char (point-min))
+        (forward-line 1)
+        (let ((table (make-hash-table :test 'equal
+                                      :size (count-lines (point) (point-max)))))
+          (while (not (eobp))
+            (let ((line (buffer-substring-no-properties
+                         (line-beginning-position) (line-end-position))))
+              (when (string-match "\\`\\([^\t]+\\)\t\\(.+\\)\\'" line)
+                (puthash (match-string 1 line) (match-string 2 line) table)))
+            (forward-line 1))
+          (when (> (hash-table-count table) 0)
+            table))))))
 
-(defun vendor-from-wwn/oui-list-from-url ()
-  "Retrieves the oui.txt file and returns an assoc list from vendor id to vendor string."
+(defun vendor-from-wwn/oui-table-from-url ()
+  "Retrieves the oui.txt file and returns a hash table from vendor id to vendor string."
   (let ((buffer (vendor-from-wwn/oui-buffer))
-        oui-list)
+        oui-table)
     (when buffer
       (with-current-buffer buffer
-        (setq oui-list (vendor-from-wwn/oui-list-from-buffer)))
+        (setq oui-table (vendor-from-wwn/oui-table-from-ieee-buffer)))
       (kill-buffer buffer)
-      (with-temp-buffer
-        (prin1 oui-list (current-buffer))
-        (write-region (point-min) (point-max) (vendor-from-wwn/oui-filename))))
-    oui-list))
+      (let ((coding-system-for-write 'raw-text))
+        (with-temp-buffer
+          (insert (format "# version %s, retrieved %s\n"
+                          vendor-from-wwn/version
+                          (format-time-string "%Y-%m-%d")))
+          (maphash (lambda (id vendor)
+                     (insert id "\t" vendor "\n"))
+                   oui-table)
+          (write-region (point-min) (point-max) (vendor-from-wwn/oui-filename)))))
+    oui-table))
 
-(defun vendor-from-wwn/oui-list ()
-  "Returns an assoc list of vendor id to vendor string. Does caching on first call."
-  (setq vendor-from-wwn/oui-list (or vendor-from-wwn/oui-list
-                                     (vendor-from-wwn/oui-list-from-file)
-                                     (vendor-from-wwn/oui-list-from-url))))
+(defun vendor-from-wwn/oui-table ()
+  "Returns a hash table of vendor id to vendor string. Does caching on first call."
+  (setq vendor-from-wwn/oui-table (or vendor-from-wwn/oui-table
+                                      (vendor-from-wwn/oui-table-from-cache-file)
+                                      (vendor-from-wwn/oui-table-from-url))))
 
 (defun vendor-from-wwn/normalize-wwn (wwn)
   "Returns the normalized form of WWN."
@@ -151,9 +173,9 @@
 
 (defun vendor-from-wwn (wwn)
   "Returns the vendor for WWN."
-  (let ((oui-list (vendor-from-wwn/oui-list))
+  (let ((oui-table (vendor-from-wwn/oui-table))
         (oui (oui-from-wwn wwn)))
-    (assoc-default oui oui-list)))
+    (gethash oui oui-table)))
 
 (provide 'vendor-from-wwn)
 ;;; vendor-from-wwn.el ends here
