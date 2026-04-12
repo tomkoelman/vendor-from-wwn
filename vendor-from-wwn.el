@@ -105,7 +105,7 @@
           (vendor-from-wwn/vendor-specific-nice-wwn wwn)))
   
 (defun vendor-from-wwn/valid-wwn (wwn)
-  "Checks the validity of a WWN. Retuns nil when invalid."
+  "Checks the validity of a WWN. Returns nil when invalid."
   (let ((wwn (vendor-from-wwn/normalize-wwn wwn)))
     (and (or (= (length wwn) 16)
              (= (length wwn) 32))
