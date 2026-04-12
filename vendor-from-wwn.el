@@ -81,7 +81,7 @@
 
 (defun vendor-from-wwn/normalize-wwn (wwn)
   "Returns the normalized form of WWN."
-  (mapconcat 'identity (split-string (downcase wwn) ":") ""))
+  (replace-regexp-in-string ":" "" (downcase wwn)))
 
 (defun vendor-from-wwn/pairs (str)
   "Returns a list of strings of length 2. E.g. \"aabbcc\" would yield
