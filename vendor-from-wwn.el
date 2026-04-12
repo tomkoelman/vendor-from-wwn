@@ -26,7 +26,7 @@
 
 (defun vendor-from-wwn/oui-filename()
   "Returns the filename that's used as datasource."
-  (concat (file-name-directory (symbol-file 'vendor-from-wwn/oui-list-from-file)) "oui.txt"))
+  (expand-file-name "vendor-from-wwn.cache" user-emacs-directory))
 
 (defun vendor-from-wwn/oui-url()
   "Returns the url that's used as a datasource."
