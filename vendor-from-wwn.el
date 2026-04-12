@@ -72,9 +72,7 @@
   "Returns an assoc list of vendor id to vendor string. Does caching on first call."
   (setq vendor-from-wwn/oui-list (or vendor-from-wwn/oui-list
                                      (vendor-from-wwn/oui-list-from-file)
-                                     (vendor-from-wwn/oui-list-from-url)
-                                     ))
-  vendor-from-wwn/oui-list)
+                                     (vendor-from-wwn/oui-list-from-url))))
 
 (defun vendor-from-wwn/normalize-wwn (wwn)
   "Returns the normalized form of WWN."
