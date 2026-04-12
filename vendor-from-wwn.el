@@ -146,16 +146,10 @@
 
 (defun network-address-authority-from-wwn (wwn)
   "Returns the Network Address Authority or NAA from WWN."
-  (let ((wwn (vendor-from-wwn/normalize-wwn wwn)))
-    (cond ((equal (substring wwn 0 1) "1")
-           "1")
-          ((equal (substring wwn 0 1) "2")
-           "2")
-          ((equal (substring wwn 0 1) "5")
-           "5")
-          ((equal (substring wwn 0 1) "6")
-           "6")
-)))
+  (let ((naa (substring (vendor-from-wwn/normalize-wwn wwn) 0 1)))
+    (unless (member naa '("1" "2" "5" "6"))
+      (error "Unknown NAA value: %s" naa))
+    naa))
 
 (defun vendor-from-wwn (wwn)
   "Returns the vendor for WWN."

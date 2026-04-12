@@ -39,6 +39,7 @@
   (should (equal (network-address-authority-from-wwn "50:06:04:85:c5:ed:aa:4c") "5"))
   (should (equal (network-address-authority-from-wwn "60:02:0f:20:00:00:ca:93:3f:2e:b2:d4:00:01:8a:54") "6"))
   (should (equal (network-address-authority-from-wwn "60020F200000CA933D3D19CA000886A5") "6"))
+  (should-error (network-address-authority-from-wwn "30:00:00:00:C9:3d:a5:46"))
 )
 
 (ert-deftest vendor-from-wwn--test()
