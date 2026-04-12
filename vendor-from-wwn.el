@@ -62,14 +62,11 @@
   (let ((buffer (vendor-from-wwn/oui-buffer))
         oui-list)
     (when buffer
-      (save-excursion
-        (pop-to-buffer buffer)
+      (with-current-buffer buffer
         (write-region (point-min) (point-max) (vendor-from-wwn/oui-filename))
         (setq oui-list (vendor-from-wwn/oui-list-from-buffer)))
-      (kill-buffer buffer)
-      )
-    oui-list)
-  )
+      (kill-buffer buffer))
+    oui-list))
 
 (defun vendor-from-wwn/oui-list ()
   "Returns an assoc list of vendor id to vendor string. Does caching on first call."
