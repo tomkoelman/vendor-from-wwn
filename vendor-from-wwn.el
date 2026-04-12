@@ -49,12 +49,11 @@
     id-to-vendor))
 
 (defun vendor-from-wwn/oui-list-from-file ()
-  "Parses the oui.txt file and returns an assoc list from vendor id to vendor string. Returns nil on some fail."
+  "Reads the cached parsed assoc list from file. Returns nil on some fail."
   (when (file-exists-p (vendor-from-wwn/oui-filename))
     (with-temp-buffer
       (insert-file-contents (vendor-from-wwn/oui-filename))
-      (vendor-from-wwn/oui-list-from-buffer)
-      )))
+      (read (current-buffer)))))
 
 (defun vendor-from-wwn/oui-list-from-url ()
   "Retrieves the oui.txt file and returns an assoc list from vendor id to vendor string."
@@ -62,9 +61,11 @@
         oui-list)
     (when buffer
       (with-current-buffer buffer
-        (write-region (point-min) (point-max) (vendor-from-wwn/oui-filename))
         (setq oui-list (vendor-from-wwn/oui-list-from-buffer)))
-      (kill-buffer buffer))
+      (kill-buffer buffer)
+      (with-temp-buffer
+        (prin1 oui-list (current-buffer))
+        (write-region (point-min) (point-max) (vendor-from-wwn/oui-filename))))
     oui-list))
 
 (defun vendor-from-wwn/oui-list ()
