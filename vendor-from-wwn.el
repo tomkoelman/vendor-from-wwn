@@ -4,7 +4,7 @@
 
 ;; Author: Tom Koelman
 ;; Created: July 2013
-;; Version: 0.7.0
+;; Version: 0.8.0
 ;; Keywords: extensions
 ;; Homepage: http://github.com/tomkoelman/vendor-from-wwn
 ;; Package-Requires: ()
