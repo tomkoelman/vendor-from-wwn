@@ -1,4 +1,4 @@
-;;; vendor-from-wwn.el --- Extract vendor information from WWNs
+;;; vendor-from-wwn.el --- Extract vendor information from WWNs  -*- lexical-binding: t; -*-
 
 ;; Copyright (C) 2013,2026 Tom Koelman
 
