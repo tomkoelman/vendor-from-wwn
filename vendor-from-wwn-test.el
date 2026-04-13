@@ -1,3 +1,5 @@
+;;; vendor-from-wwn-test.el --- Tests for vendor-from-wwn  -*- lexical-binding: t; -*-
+
 (require 'vendor-from-wwn)
 (require 'ert)
 (ert-deftest vendor-from-wwn/nice-wwn--test()
