@@ -115,20 +115,27 @@
 
 (defun vendor-from-wwn/colon-separated-pairs (str)
   "Returns STR, split into pairs, separated by :'s."
-  (mapconcat 'identity (vendor-from-wwn/pairs (vendor-from-wwn/normalize-wwn str)) ":"))
+  (string-join (vendor-from-wwn/pairs str) ":"))
 
-(defun vendor-from-wwn/vendor-specific-nice-wwn (wwn)
-  "Converts WWN to nicely formatted string with vendor-specific information."
-  (let ((vendor-specific-extension (vendor-specific-extension-from-wwn wwn)))
-    (concat "[" (vendor-from-wwn/colon-separated-pairs (vendor-sequence-from-wwn wwn)) "]"
-            (when vendor-specific-extension
-              (concat "[" (vendor-from-wwn/colon-separated-pairs vendor-specific-extension) "]")))))
-  
+(defun vendor-from-wwn/parse-wwn (wwn)
+  "Parse WWN into its components. Returns (naa oui vendor-seq vendor-ext)."
+  (let* ((wwn (vendor-from-wwn/normalize-wwn wwn))
+         (naa (substring wwn 0 1)))
+    (unless (member naa '("1" "2" "5" "6"))
+      (error "Unknown NAA value: %s" naa))
+    (pcase naa
+      ((or "1" "2") (list naa (substring wwn 4 10) (substring wwn 10) nil))
+      ("5"          (list naa (substring wwn 1 7) (substring wwn 7) nil))
+      ("6"          (list naa (substring wwn 1 7) (substring wwn 7 16) (substring wwn 16))))))
+
 (defun vendor-from-wwn/nice-wwn (wwn)
   "Return a nicely formatted version of WWN."
-  (concat "[" (network-address-authority-from-wwn wwn) "]"
-          "[" (vendor-from-wwn/colon-separated-pairs (oui-from-wwn wwn)) "]"
-          (vendor-from-wwn/vendor-specific-nice-wwn wwn)))
+  (pcase-let ((`(,naa ,oui ,seq ,ext) (vendor-from-wwn/parse-wwn wwn)))
+    (concat "[" naa "]"
+            "[" (vendor-from-wwn/colon-separated-pairs oui) "]"
+            "[" (vendor-from-wwn/colon-separated-pairs seq) "]"
+            (when ext
+              (concat "[" (vendor-from-wwn/colon-separated-pairs ext) "]")))))
   
 (defun vendor-from-wwn/valid-wwn (wwn)
   "Checks the validity of a WWN. Returns nil when invalid."
@@ -139,47 +146,24 @@
 
 (defun vendor-sequence-from-wwn (wwn)
   "Returns the vendor sequence or serial number from WWN."
-  (let ((wwn (vendor-from-wwn/normalize-wwn wwn))
-        (naa (network-address-authority-from-wwn wwn)))
-    (cond ((or (equal naa "1")
-               (equal naa "2"))
-           (substring wwn 10))
-          ((equal naa "5")
-           (substring wwn 7))
-          ((equal naa "6")
-           (substring wwn 7 16))
-)))
+  (nth 2 (vendor-from-wwn/parse-wwn wwn)))
 
 (defun vendor-specific-extension-from-wwn (wwn)
   "Returns the vendor specific extension from WWN. Not every WWN has one, returns nil when not."
-  (when (equal (network-address-authority-from-wwn wwn) "6")
-    (substring (vendor-from-wwn/normalize-wwn wwn) 16)))
+  (nth 3 (vendor-from-wwn/parse-wwn wwn)))
 
 (defun oui-from-wwn (wwn)
   "Returns the Organizationally Unique Identifier or OUI from WWN."
-  (let ((wwn (vendor-from-wwn/normalize-wwn wwn))
-        (naa (network-address-authority-from-wwn wwn)))
-    (cond ((or (equal naa "1")
-               (equal naa "2"))
-           (substring wwn 4 10))
-          ((or (equal naa "5")
-               (equal naa "6"))
-           (substring wwn 1 7))
-)))
-
+  (nth 1 (vendor-from-wwn/parse-wwn wwn)))
 
 (defun network-address-authority-from-wwn (wwn)
   "Returns the Network Address Authority or NAA from WWN."
-  (let ((naa (substring (vendor-from-wwn/normalize-wwn wwn) 0 1)))
-    (unless (member naa '("1" "2" "5" "6"))
-      (error "Unknown NAA value: %s" naa))
-    naa))
+  (nth 0 (vendor-from-wwn/parse-wwn wwn)))
 
 (defun vendor-from-wwn (wwn)
   "Returns the vendor for WWN."
-  (let ((oui-table (vendor-from-wwn/oui-table))
-        (oui (oui-from-wwn wwn)))
-    (gethash oui oui-table)))
+  (gethash (nth 1 (vendor-from-wwn/parse-wwn wwn))
+           (vendor-from-wwn/oui-table)))
 
 (provide 'vendor-from-wwn)
 ;;; vendor-from-wwn.el ends here
