@@ -19,6 +19,9 @@
 ;; Key defun is vendor-from-wwn/nice-wwn, which takes a WWN and returns a
 ;; nicely formatted string with all vendor-specific information recognizable.
 ;;
+;; Another exported defun is vendor-from-wwn, which takes a WWN and returns
+;; the vendor (if known).
+;;
 ;;; Code:
 
 (defconst vendor-from-wwn/version "0.6.0")
@@ -126,6 +129,7 @@
       ("5"          (list naa (substring wwn 1 7) (substring wwn 7) nil))
       ("6"          (list naa (substring wwn 1 7) (substring wwn 7 16) (substring wwn 16))))))
 
+;;;###autoload
 (defun vendor-from-wwn/nice-wwn (wwn)
   "Return a nicely formatted version of WWN."
   (pcase-let ((`(,naa ,oui ,seq ,ext) (vendor-from-wwn/parse-wwn wwn)))
@@ -158,6 +162,7 @@
   "Returns the Network Address Authority or NAA from WWN."
   (nth 0 (vendor-from-wwn/parse-wwn wwn)))
 
+;;;###autoload
 (defun vendor-from-wwn (wwn)
   "Returns the vendor for WWN."
   (gethash (nth 1 (vendor-from-wwn/parse-wwn wwn))
