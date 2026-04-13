@@ -2,3 +2,10 @@ This package provides functionality to extract vendor information from a WWN.
 
 Key defun is ~vendor-from-wwn/nice-wwn~, which takes a WWN and returns a
 nicely formatted string with all vendor-specific information recognizable.
+
+For example ~(vendor-from-wwn/nice-wwn "10:00:00:60:69:90:72:bc")~ returns ~"[1][00:60:69][90:72:bc]"~.
+
+Also exported is ~vendor-from-wwn~, which takes a WWN and returns
+the corresponding vendor, if known.
+
+For example ~(vendor-from-wwn "10:00:00:60:69:90:72:bc")~ returns ~"Brocade Communications Systems LLC"~.
