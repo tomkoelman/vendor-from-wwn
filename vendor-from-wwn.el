@@ -39,7 +39,11 @@
 
 (defun vendor-from-wwn/oui-table-from-ieee-buffer ()
   "Parses the current buffer and returns a hash table from vendor id to vendor string."
-  (let ((entry-re "\\(..\\)-\\(..\\)-\\(..\\) +([^)]*)\\([^\r]+\\)"))
+  (let ((entry-re (rx (group (= 2 anychar)) "-"
+                         (group (= 2 anychar)) "-"
+                         (group (= 2 anychar))
+                         (+ " ") "(" (* (not ")")) ")"
+                         (group (+ (not (any "\r" "\n")))))))
     (goto-char (point-min))
     (let ((table (make-hash-table :test 'equal
                                   :size (how-many entry-re (point-min) (point-max)))))
