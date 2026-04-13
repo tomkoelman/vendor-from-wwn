@@ -165,7 +165,7 @@
 ;;;###autoload
 (defun vendor-from-wwn (wwn)
   "Returns the vendor for WWN."
-  (gethash (nth 1 (vendor-from-wwn/parse-wwn wwn))
+  (gethash (oui-from-wwn wwn)
            (vendor-from-wwn/oui-table)))
 
 (provide 'vendor-from-wwn)
