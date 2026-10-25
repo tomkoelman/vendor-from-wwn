@@ -4,7 +4,7 @@
 
 ;; Author: Tom Koelman
 ;; Created: July 2013
-;; Version: 0.8.0
+;; Version: 0.8.1
 ;; Keywords: extensions
 ;; Homepage: http://github.com/tomkoelman/vendor-from-wwn
 ;; Package-Requires: ()
@@ -24,7 +24,8 @@
 ;;
 ;;; Code:
 
-(defconst vendor-from-wwn/version "0.8.0")
+(defconst vendor-from-wwn/version (or (package-get-version) "unknown")
+  "Version of this package, taken from the `Version:' file header.")
 
 (defvar vendor-from-wwn/oui-table nil)
 
