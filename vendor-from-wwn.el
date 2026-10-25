@@ -24,7 +24,7 @@
 ;;
 ;;; Code:
 
-(defconst vendor-from-wwn/version "0.6.0")
+(defconst vendor-from-wwn/version "0.8.0")
 
 (defvar vendor-from-wwn/oui-table nil)
 
