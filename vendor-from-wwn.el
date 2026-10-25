@@ -32,7 +32,7 @@
   "Returns the filename that's used as datasource."
   (expand-file-name "vendor-from-wwn.cache" user-emacs-directory))
 
-(defconst vendor-from-wwn/oui-url "https://standards.ieee.org/develop/regauth/oui/oui.txt" "URL that's used as a datasource.")
+(defconst vendor-from-wwn/oui-url "https://standards-oui.ieee.org/oui/oui.txt" "URL that's used as a datasource.")
 
 (defun vendor-from-wwn/oui-buffer()
   "Returns a buffer containing oui, gotten from internet. Returns nil if that fails."
